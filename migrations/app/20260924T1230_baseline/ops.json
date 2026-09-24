@@ -1,0 +1,1909 @@
+[
+  {
+    "id": "schema.public",
+    "label": "Create schema \"public\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "Create schema \"public\"",
+        "sql": "CREATE SCHEMA IF NOT EXISTS \"public\"",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "table.article",
+    "label": "Create table \"article\"",
+    "summary": "Creates table \"article\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "article"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"article\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"article\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"article\"",
+        "sql": "CREATE TABLE \"public\".\"article\" (\n  \"content\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"excerpt\" text,\n  \"featuredImage\" text,\n  \"gameId\" int4 NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"patchId\" int4,\n  \"publishedAt\" timestamptz,\n  \"slug\" text NOT NULL,\n  \"status\" text DEFAULT 'DRAFT' NOT NULL,\n  \"title\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"article\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"article\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.articleCategory",
+    "label": "Create table \"articleCategory\"",
+    "summary": "Creates table \"articleCategory\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "articleCategory"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"articleCategory\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"articleCategory\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"articleCategory\"",
+        "sql": "CREATE TABLE \"public\".\"articleCategory\" (\n  \"articleId\" int4 NOT NULL,\n  \"categoryId\" int4 NOT NULL,\n  PRIMARY KEY (\"articleId\", \"categoryId\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"articleCategory\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"articleCategory\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.articleCitation",
+    "label": "Create table \"articleCitation\"",
+    "summary": "Creates table \"articleCitation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "articleCitation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"articleCitation\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"articleCitation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"articleCitation\"",
+        "sql": "CREATE TABLE \"public\".\"articleCitation\" (\n  \"articleId\" int4 NOT NULL,\n  \"excerpt\" text,\n  \"id\" SERIAL NOT NULL,\n  \"note\" text,\n  \"sourceId\" int4 NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"articleCitation\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"articleCitation\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.articleTag",
+    "label": "Create table \"articleTag\"",
+    "summary": "Creates table \"articleTag\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "articleTag"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"articleTag\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"articleTag\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"articleTag\"",
+        "sql": "CREATE TABLE \"public\".\"articleTag\" (\n  \"articleId\" int4 NOT NULL,\n  \"tagId\" int4 NOT NULL,\n  PRIMARY KEY (\"articleId\", \"tagId\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"articleTag\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"articleTag\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.category",
+    "label": "Create table \"category\"",
+    "summary": "Creates table \"category\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "category"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"category\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"category\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"category\"",
+        "sql": "CREATE TABLE \"public\".\"category\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"description\" text,\n  \"id\" SERIAL NOT NULL,\n  \"name\" text NOT NULL,\n  \"slug\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"category\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"category\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.game",
+    "label": "Create table \"game\"",
+    "summary": "Creates table \"game\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "game"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"game\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"game\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"game\"",
+        "sql": "CREATE TABLE \"public\".\"game\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"description\" text,\n  \"id\" SERIAL NOT NULL,\n  \"isActive\" bool DEFAULT true NOT NULL,\n  \"logo\" text,\n  \"name\" text NOT NULL,\n  \"slug\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"game\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"game\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.patch",
+    "label": "Create table \"patch\"",
+    "summary": "Creates table \"patch\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "patch"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"patch\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"patch\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"patch\"",
+        "sql": "CREATE TABLE \"public\".\"patch\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"description\" text,\n  \"gameId\" int4 NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"releaseDate\" timestamptz,\n  \"title\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"version\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"patch\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"patch\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.researchNote",
+    "label": "Create table \"researchNote\"",
+    "summary": "Creates table \"researchNote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "researchNote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"researchNote\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchNote\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"researchNote\"",
+        "sql": "CREATE TABLE \"public\".\"researchNote\" (\n  \"content\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"noteType\" text NOT NULL,\n  \"researchProjectId\" int4 NOT NULL,\n  \"title\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"researchNote\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchNote\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.researchProject",
+    "label": "Create table \"researchProject\"",
+    "summary": "Creates table \"researchProject\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "researchProject"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"researchProject\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchProject\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"researchProject\"",
+        "sql": "CREATE TABLE \"public\".\"researchProject\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"gameId\" int4 NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"notes\" text,\n  \"researchQuestion\" text,\n  \"status\" text DEFAULT 'OPEN' NOT NULL,\n  \"title\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"researchProject\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchProject\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.researchProjectSource",
+    "label": "Create table \"researchProjectSource\"",
+    "summary": "Creates table \"researchProjectSource\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "researchProjectSource"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"researchProjectSource\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchProjectSource\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"researchProjectSource\"",
+        "sql": "CREATE TABLE \"public\".\"researchProjectSource\" (\n  \"researchProjectId\" int4 NOT NULL,\n  \"sourceId\" int4 NOT NULL,\n  PRIMARY KEY (\"researchProjectId\", \"sourceId\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"researchProjectSource\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchProjectSource\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.source",
+    "label": "Create table \"source\"",
+    "summary": "Creates table \"source\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "source"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"source\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"source\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"source\"",
+        "sql": "CREATE TABLE \"public\".\"source\" (\n  \"author\" text,\n  \"collectedAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"notes\" text,\n  \"publicationDate\" timestamptz,\n  \"publisher\" text,\n  \"reliability\" text DEFAULT 'MEDIUM' NOT NULL,\n  \"sourceType\" text NOT NULL,\n  \"title\" text NOT NULL,\n  \"url\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"source\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"source\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.tag",
+    "label": "Create table \"tag\"",
+    "summary": "Creates table \"tag\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "tag"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"tag\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"tag\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"tag\"",
+        "sql": "CREATE TABLE \"public\".\"tag\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"name\" text NOT NULL,\n  \"slug\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"tag\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"tag\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.article.article_slug_key",
+    "label": "Add unique constraint on \"article\" (slug)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "article_slug_key",
+        "table": "article"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"article_slug_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "article_slug_key",
+          "public",
+          "\"public\".\"article\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"article_slug_key\"",
+        "sql": "ALTER TABLE \"public\".\"article\" ADD CONSTRAINT \"article_slug_key\" UNIQUE (\"slug\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"article_slug_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "article_slug_key",
+          "public",
+          "\"public\".\"article\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.category.category_slug_key",
+    "label": "Add unique constraint on \"category\" (slug)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "category_slug_key",
+        "table": "category"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"category_slug_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "category_slug_key",
+          "public",
+          "\"public\".\"category\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"category_slug_key\"",
+        "sql": "ALTER TABLE \"public\".\"category\" ADD CONSTRAINT \"category_slug_key\" UNIQUE (\"slug\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"category_slug_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "category_slug_key",
+          "public",
+          "\"public\".\"category\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.game.game_slug_key",
+    "label": "Add unique constraint on \"game\" (slug)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "game_slug_key",
+        "table": "game"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"game_slug_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "game_slug_key",
+          "public",
+          "\"public\".\"game\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"game_slug_key\"",
+        "sql": "ALTER TABLE \"public\".\"game\" ADD CONSTRAINT \"game_slug_key\" UNIQUE (\"slug\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"game_slug_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "game_slug_key",
+          "public",
+          "\"public\".\"game\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.patch.patch_gameId_version_key",
+    "label": "Add unique constraint on \"patch\" (gameId, version)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "patch_gameId_version_key",
+        "table": "patch"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"patch_gameId_version_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "patch_gameId_version_key",
+          "public",
+          "\"public\".\"patch\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"patch_gameId_version_key\"",
+        "sql": "ALTER TABLE \"public\".\"patch\" ADD CONSTRAINT \"patch_gameId_version_key\" UNIQUE (\"gameId\", \"version\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"patch_gameId_version_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "patch_gameId_version_key",
+          "public",
+          "\"public\".\"patch\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.source.source_url_key",
+    "label": "Add unique constraint on \"source\" (url)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "source_url_key",
+        "table": "source"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"source_url_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "source_url_key",
+          "public",
+          "\"public\".\"source\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"source_url_key\"",
+        "sql": "ALTER TABLE \"public\".\"source\" ADD CONSTRAINT \"source_url_key\" UNIQUE (\"url\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"source_url_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "source_url_key",
+          "public",
+          "\"public\".\"source\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.tag.tag_slug_key",
+    "label": "Add unique constraint on \"tag\" (slug)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "tag_slug_key",
+        "table": "tag"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"tag_slug_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "tag_slug_key",
+          "public",
+          "\"public\".\"tag\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"tag_slug_key\"",
+        "sql": "ALTER TABLE \"public\".\"tag\" ADD CONSTRAINT \"tag_slug_key\" UNIQUE (\"slug\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"tag_slug_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "tag_slug_key",
+          "public",
+          "\"public\".\"tag\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.article.article_gameId_idx_6cdb47f8",
+    "label": "Create index \"article_gameId_idx_6cdb47f8\" on \"article\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "article_gameId_idx_6cdb47f8",
+        "table": "article"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"article_gameId_idx_6cdb47f8\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"article_gameId_idx_6cdb47f8\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"article_gameId_idx_6cdb47f8\"",
+        "sql": "CREATE INDEX \"article_gameId_idx_6cdb47f8\" ON \"public\".\"article\" (\"gameId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"article_gameId_idx_6cdb47f8\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"article_gameId_idx_6cdb47f8\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.article.article_patchId_idx_e1f5c9f9",
+    "label": "Create index \"article_patchId_idx_e1f5c9f9\" on \"article\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "article_patchId_idx_e1f5c9f9",
+        "table": "article"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"article_patchId_idx_e1f5c9f9\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"article_patchId_idx_e1f5c9f9\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"article_patchId_idx_e1f5c9f9\"",
+        "sql": "CREATE INDEX \"article_patchId_idx_e1f5c9f9\" ON \"public\".\"article\" (\"patchId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"article_patchId_idx_e1f5c9f9\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"article_patchId_idx_e1f5c9f9\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.article.article_publishedAt_idx_36121b91",
+    "label": "Create index \"article_publishedAt_idx_36121b91\" on \"article\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "article_publishedAt_idx_36121b91",
+        "table": "article"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"article_publishedAt_idx_36121b91\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"article_publishedAt_idx_36121b91\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"article_publishedAt_idx_36121b91\"",
+        "sql": "CREATE INDEX \"article_publishedAt_idx_36121b91\" ON \"public\".\"article\" (\"publishedAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"article_publishedAt_idx_36121b91\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"article_publishedAt_idx_36121b91\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.article.article_status_idx_e98638ab",
+    "label": "Create index \"article_status_idx_e98638ab\" on \"article\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "article_status_idx_e98638ab",
+        "table": "article"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"article_status_idx_e98638ab\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"article_status_idx_e98638ab\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"article_status_idx_e98638ab\"",
+        "sql": "CREATE INDEX \"article_status_idx_e98638ab\" ON \"public\".\"article\" (\"status\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"article_status_idx_e98638ab\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"article_status_idx_e98638ab\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.articleCategory.articleCategory_articleId_idx_3dd188a0",
+    "label": "Create index \"articleCategory_articleId_idx_3dd188a0\" on \"articleCategory\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "articleCategory_articleId_idx_3dd188a0",
+        "table": "articleCategory"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"articleCategory_articleId_idx_3dd188a0\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"articleCategory_articleId_idx_3dd188a0\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"articleCategory_articleId_idx_3dd188a0\"",
+        "sql": "CREATE INDEX \"articleCategory_articleId_idx_3dd188a0\" ON \"public\".\"articleCategory\" (\"articleId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"articleCategory_articleId_idx_3dd188a0\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"articleCategory_articleId_idx_3dd188a0\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.articleCategory.articleCategory_categoryId_idx_15c304f2",
+    "label": "Create index \"articleCategory_categoryId_idx_15c304f2\" on \"articleCategory\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "articleCategory_categoryId_idx_15c304f2",
+        "table": "articleCategory"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"articleCategory_categoryId_idx_15c304f2\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"articleCategory_categoryId_idx_15c304f2\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"articleCategory_categoryId_idx_15c304f2\"",
+        "sql": "CREATE INDEX \"articleCategory_categoryId_idx_15c304f2\" ON \"public\".\"articleCategory\" (\"categoryId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"articleCategory_categoryId_idx_15c304f2\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"articleCategory_categoryId_idx_15c304f2\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.articleCitation.articleCitation_articleId_idx_3dd188a0",
+    "label": "Create index \"articleCitation_articleId_idx_3dd188a0\" on \"articleCitation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "articleCitation_articleId_idx_3dd188a0",
+        "table": "articleCitation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"articleCitation_articleId_idx_3dd188a0\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"articleCitation_articleId_idx_3dd188a0\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"articleCitation_articleId_idx_3dd188a0\"",
+        "sql": "CREATE INDEX \"articleCitation_articleId_idx_3dd188a0\" ON \"public\".\"articleCitation\" (\"articleId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"articleCitation_articleId_idx_3dd188a0\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"articleCitation_articleId_idx_3dd188a0\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.articleCitation.articleCitation_sourceId_idx_d92a2571",
+    "label": "Create index \"articleCitation_sourceId_idx_d92a2571\" on \"articleCitation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "articleCitation_sourceId_idx_d92a2571",
+        "table": "articleCitation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"articleCitation_sourceId_idx_d92a2571\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"articleCitation_sourceId_idx_d92a2571\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"articleCitation_sourceId_idx_d92a2571\"",
+        "sql": "CREATE INDEX \"articleCitation_sourceId_idx_d92a2571\" ON \"public\".\"articleCitation\" (\"sourceId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"articleCitation_sourceId_idx_d92a2571\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"articleCitation_sourceId_idx_d92a2571\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.articleTag.articleTag_articleId_idx_3dd188a0",
+    "label": "Create index \"articleTag_articleId_idx_3dd188a0\" on \"articleTag\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "articleTag_articleId_idx_3dd188a0",
+        "table": "articleTag"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"articleTag_articleId_idx_3dd188a0\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"articleTag_articleId_idx_3dd188a0\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"articleTag_articleId_idx_3dd188a0\"",
+        "sql": "CREATE INDEX \"articleTag_articleId_idx_3dd188a0\" ON \"public\".\"articleTag\" (\"articleId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"articleTag_articleId_idx_3dd188a0\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"articleTag_articleId_idx_3dd188a0\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.articleTag.articleTag_tagId_idx_86854244",
+    "label": "Create index \"articleTag_tagId_idx_86854244\" on \"articleTag\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "articleTag_tagId_idx_86854244",
+        "table": "articleTag"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"articleTag_tagId_idx_86854244\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"articleTag_tagId_idx_86854244\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"articleTag_tagId_idx_86854244\"",
+        "sql": "CREATE INDEX \"articleTag_tagId_idx_86854244\" ON \"public\".\"articleTag\" (\"tagId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"articleTag_tagId_idx_86854244\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"articleTag_tagId_idx_86854244\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.patch.patch_gameId_idx_6cdb47f8",
+    "label": "Create index \"patch_gameId_idx_6cdb47f8\" on \"patch\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "patch_gameId_idx_6cdb47f8",
+        "table": "patch"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"patch_gameId_idx_6cdb47f8\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"patch_gameId_idx_6cdb47f8\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"patch_gameId_idx_6cdb47f8\"",
+        "sql": "CREATE INDEX \"patch_gameId_idx_6cdb47f8\" ON \"public\".\"patch\" (\"gameId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"patch_gameId_idx_6cdb47f8\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"patch_gameId_idx_6cdb47f8\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.researchNote.researchNote_researchProjectId_idx_a0714495",
+    "label": "Create index \"researchNote_researchProjectId_idx_a0714495\" on \"researchNote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "researchNote_researchProjectId_idx_a0714495",
+        "table": "researchNote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"researchNote_researchProjectId_idx_a0714495\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchNote_researchProjectId_idx_a0714495\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"researchNote_researchProjectId_idx_a0714495\"",
+        "sql": "CREATE INDEX \"researchNote_researchProjectId_idx_a0714495\" ON \"public\".\"researchNote\" (\"researchProjectId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"researchNote_researchProjectId_idx_a0714495\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchNote_researchProjectId_idx_a0714495\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.researchProject.researchProject_gameId_idx_6cdb47f8",
+    "label": "Create index \"researchProject_gameId_idx_6cdb47f8\" on \"researchProject\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "researchProject_gameId_idx_6cdb47f8",
+        "table": "researchProject"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"researchProject_gameId_idx_6cdb47f8\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchProject_gameId_idx_6cdb47f8\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"researchProject_gameId_idx_6cdb47f8\"",
+        "sql": "CREATE INDEX \"researchProject_gameId_idx_6cdb47f8\" ON \"public\".\"researchProject\" (\"gameId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"researchProject_gameId_idx_6cdb47f8\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchProject_gameId_idx_6cdb47f8\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.researchProject.researchProject_status_idx_e98638ab",
+    "label": "Create index \"researchProject_status_idx_e98638ab\" on \"researchProject\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "researchProject_status_idx_e98638ab",
+        "table": "researchProject"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"researchProject_status_idx_e98638ab\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchProject_status_idx_e98638ab\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"researchProject_status_idx_e98638ab\"",
+        "sql": "CREATE INDEX \"researchProject_status_idx_e98638ab\" ON \"public\".\"researchProject\" (\"status\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"researchProject_status_idx_e98638ab\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchProject_status_idx_e98638ab\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.researchProjectSource.researchProjectSource_researchProjectId_idx_a0714495",
+    "label": "Create index \"researchProjectSource_researchProjectId_idx_a0714495\" on \"researchProjectSource\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "researchProjectSource_researchProjectId_idx_a0714495",
+        "table": "researchProjectSource"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"researchProjectSource_researchProjectId_idx_a0714495\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchProjectSource_researchProjectId_idx_a0714495\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"researchProjectSource_researchProjectId_idx_a0714495\"",
+        "sql": "CREATE INDEX \"researchProjectSource_researchProjectId_idx_a0714495\" ON \"public\".\"researchProjectSource\" (\"researchProjectId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"researchProjectSource_researchProjectId_idx_a0714495\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchProjectSource_researchProjectId_idx_a0714495\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.researchProjectSource.researchProjectSource_sourceId_idx_d92a2571",
+    "label": "Create index \"researchProjectSource_sourceId_idx_d92a2571\" on \"researchProjectSource\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "researchProjectSource_sourceId_idx_d92a2571",
+        "table": "researchProjectSource"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"researchProjectSource_sourceId_idx_d92a2571\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchProjectSource_sourceId_idx_d92a2571\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"researchProjectSource_sourceId_idx_d92a2571\"",
+        "sql": "CREATE INDEX \"researchProjectSource_sourceId_idx_d92a2571\" ON \"public\".\"researchProjectSource\" (\"sourceId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"researchProjectSource_sourceId_idx_d92a2571\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchProjectSource_sourceId_idx_d92a2571\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.article.article_gameId_fkey",
+    "label": "Add foreign key \"article_gameId_fkey\" on \"article\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "article_gameId_fkey",
+        "table": "article"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"article_gameId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "article_gameId_fkey",
+          "public",
+          "\"public\".\"article\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"article_gameId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"article\"\nADD CONSTRAINT \"article_gameId_fkey\"\nFOREIGN KEY (\"gameId\")\nREFERENCES \"public\".\"game\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"article_gameId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "article_gameId_fkey",
+          "public",
+          "\"public\".\"article\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.article.article_patchId_fkey",
+    "label": "Add foreign key \"article_patchId_fkey\" on \"article\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "article_patchId_fkey",
+        "table": "article"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"article_patchId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "article_patchId_fkey",
+          "public",
+          "\"public\".\"article\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"article_patchId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"article\"\nADD CONSTRAINT \"article_patchId_fkey\"\nFOREIGN KEY (\"patchId\")\nREFERENCES \"public\".\"patch\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"article_patchId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "article_patchId_fkey",
+          "public",
+          "\"public\".\"article\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.articleCategory.articleCategory_articleId_fkey",
+    "label": "Add foreign key \"articleCategory_articleId_fkey\" on \"articleCategory\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "articleCategory_articleId_fkey",
+        "table": "articleCategory"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"articleCategory_articleId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "articleCategory_articleId_fkey",
+          "public",
+          "\"public\".\"articleCategory\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"articleCategory_articleId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"articleCategory\"\nADD CONSTRAINT \"articleCategory_articleId_fkey\"\nFOREIGN KEY (\"articleId\")\nREFERENCES \"public\".\"article\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"articleCategory_articleId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "articleCategory_articleId_fkey",
+          "public",
+          "\"public\".\"articleCategory\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.articleCategory.articleCategory_categoryId_fkey",
+    "label": "Add foreign key \"articleCategory_categoryId_fkey\" on \"articleCategory\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "articleCategory_categoryId_fkey",
+        "table": "articleCategory"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"articleCategory_categoryId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "articleCategory_categoryId_fkey",
+          "public",
+          "\"public\".\"articleCategory\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"articleCategory_categoryId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"articleCategory\"\nADD CONSTRAINT \"articleCategory_categoryId_fkey\"\nFOREIGN KEY (\"categoryId\")\nREFERENCES \"public\".\"category\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"articleCategory_categoryId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "articleCategory_categoryId_fkey",
+          "public",
+          "\"public\".\"articleCategory\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.articleCitation.articleCitation_articleId_fkey",
+    "label": "Add foreign key \"articleCitation_articleId_fkey\" on \"articleCitation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "articleCitation_articleId_fkey",
+        "table": "articleCitation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"articleCitation_articleId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "articleCitation_articleId_fkey",
+          "public",
+          "\"public\".\"articleCitation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"articleCitation_articleId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"articleCitation\"\nADD CONSTRAINT \"articleCitation_articleId_fkey\"\nFOREIGN KEY (\"articleId\")\nREFERENCES \"public\".\"article\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"articleCitation_articleId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "articleCitation_articleId_fkey",
+          "public",
+          "\"public\".\"articleCitation\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.articleCitation.articleCitation_sourceId_fkey",
+    "label": "Add foreign key \"articleCitation_sourceId_fkey\" on \"articleCitation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "articleCitation_sourceId_fkey",
+        "table": "articleCitation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"articleCitation_sourceId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "articleCitation_sourceId_fkey",
+          "public",
+          "\"public\".\"articleCitation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"articleCitation_sourceId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"articleCitation\"\nADD CONSTRAINT \"articleCitation_sourceId_fkey\"\nFOREIGN KEY (\"sourceId\")\nREFERENCES \"public\".\"source\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"articleCitation_sourceId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "articleCitation_sourceId_fkey",
+          "public",
+          "\"public\".\"articleCitation\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.articleTag.articleTag_articleId_fkey",
+    "label": "Add foreign key \"articleTag_articleId_fkey\" on \"articleTag\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "articleTag_articleId_fkey",
+        "table": "articleTag"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"articleTag_articleId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "articleTag_articleId_fkey",
+          "public",
+          "\"public\".\"articleTag\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"articleTag_articleId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"articleTag\"\nADD CONSTRAINT \"articleTag_articleId_fkey\"\nFOREIGN KEY (\"articleId\")\nREFERENCES \"public\".\"article\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"articleTag_articleId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "articleTag_articleId_fkey",
+          "public",
+          "\"public\".\"articleTag\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.articleTag.articleTag_tagId_fkey",
+    "label": "Add foreign key \"articleTag_tagId_fkey\" on \"articleTag\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "articleTag_tagId_fkey",
+        "table": "articleTag"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"articleTag_tagId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "articleTag_tagId_fkey",
+          "public",
+          "\"public\".\"articleTag\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"articleTag_tagId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"articleTag\"\nADD CONSTRAINT \"articleTag_tagId_fkey\"\nFOREIGN KEY (\"tagId\")\nREFERENCES \"public\".\"tag\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"articleTag_tagId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "articleTag_tagId_fkey",
+          "public",
+          "\"public\".\"articleTag\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.patch.patch_gameId_fkey",
+    "label": "Add foreign key \"patch_gameId_fkey\" on \"patch\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "patch_gameId_fkey",
+        "table": "patch"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"patch_gameId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "patch_gameId_fkey",
+          "public",
+          "\"public\".\"patch\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"patch_gameId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"patch\"\nADD CONSTRAINT \"patch_gameId_fkey\"\nFOREIGN KEY (\"gameId\")\nREFERENCES \"public\".\"game\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"patch_gameId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "patch_gameId_fkey",
+          "public",
+          "\"public\".\"patch\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.researchNote.researchNote_researchProjectId_fkey",
+    "label": "Add foreign key \"researchNote_researchProjectId_fkey\" on \"researchNote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "researchNote_researchProjectId_fkey",
+        "table": "researchNote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"researchNote_researchProjectId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "researchNote_researchProjectId_fkey",
+          "public",
+          "\"public\".\"researchNote\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"researchNote_researchProjectId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"researchNote\"\nADD CONSTRAINT \"researchNote_researchProjectId_fkey\"\nFOREIGN KEY (\"researchProjectId\")\nREFERENCES \"public\".\"researchProject\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"researchNote_researchProjectId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "researchNote_researchProjectId_fkey",
+          "public",
+          "\"public\".\"researchNote\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.researchProject.researchProject_gameId_fkey",
+    "label": "Add foreign key \"researchProject_gameId_fkey\" on \"researchProject\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "researchProject_gameId_fkey",
+        "table": "researchProject"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"researchProject_gameId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "researchProject_gameId_fkey",
+          "public",
+          "\"public\".\"researchProject\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"researchProject_gameId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"researchProject\"\nADD CONSTRAINT \"researchProject_gameId_fkey\"\nFOREIGN KEY (\"gameId\")\nREFERENCES \"public\".\"game\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"researchProject_gameId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "researchProject_gameId_fkey",
+          "public",
+          "\"public\".\"researchProject\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.researchProjectSource.researchProjectSource_researchProjectId_fkey",
+    "label": "Add foreign key \"researchProjectSource_researchProjectId_fkey\" on \"researchProjectSource\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "researchProjectSource_researchProjectId_fkey",
+        "table": "researchProjectSource"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"researchProjectSource_researchProjectId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "researchProjectSource_researchProjectId_fkey",
+          "public",
+          "\"public\".\"researchProjectSource\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"researchProjectSource_researchProjectId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"researchProjectSource\"\nADD CONSTRAINT \"researchProjectSource_researchProjectId_fkey\"\nFOREIGN KEY (\"researchProjectId\")\nREFERENCES \"public\".\"researchProject\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"researchProjectSource_researchProjectId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "researchProjectSource_researchProjectId_fkey",
+          "public",
+          "\"public\".\"researchProjectSource\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.researchProjectSource.researchProjectSource_sourceId_fkey",
+    "label": "Add foreign key \"researchProjectSource_sourceId_fkey\" on \"researchProjectSource\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "researchProjectSource_sourceId_fkey",
+        "table": "researchProjectSource"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"researchProjectSource_sourceId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "researchProjectSource_sourceId_fkey",
+          "public",
+          "\"public\".\"researchProjectSource\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"researchProjectSource_sourceId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"researchProjectSource\"\nADD CONSTRAINT \"researchProjectSource_sourceId_fkey\"\nFOREIGN KEY (\"sourceId\")\nREFERENCES \"public\".\"source\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"researchProjectSource_sourceId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "researchProjectSource_sourceId_fkey",
+          "public",
+          "\"public\".\"researchProjectSource\""
+        ]
+      }
+    ]
+  }
+]

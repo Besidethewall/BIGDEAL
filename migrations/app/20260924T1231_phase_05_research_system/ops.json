@@ -1,0 +1,2101 @@
+[
+  {
+    "id": "dropConstraint.articleCitation.articleCitation_sourceId_fkey",
+    "label": "Drop constraint \"articleCitation_sourceId_fkey\" on \"articleCitation\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "articleCitation_sourceId_fkey",
+        "table": "articleCitation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"articleCitation_sourceId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "articleCitation_sourceId_fkey",
+          "public",
+          "\"public\".\"articleCitation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop constraint \"articleCitation_sourceId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"articleCitation\" DROP CONSTRAINT \"articleCitation_sourceId_fkey\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"articleCitation_sourceId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "articleCitation_sourceId_fkey",
+          "public",
+          "\"public\".\"articleCitation\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropColumn.researchProject.notes",
+    "label": "Drop column \"notes\" from \"researchProject\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "notes",
+        "table": "researchProject"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"notes\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "researchProject",
+          "notes"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"notes\"",
+        "sql": "ALTER TABLE \"public\".\"researchProject\" DROP COLUMN \"notes\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"notes\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "researchProject",
+          "notes"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropConstraint.researchProjectSource.researchProjectSource_sourceId_fkey",
+    "label": "Drop constraint \"researchProjectSource_sourceId_fkey\" on \"researchProjectSource\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "researchProjectSource_sourceId_fkey",
+        "table": "researchProjectSource"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"researchProjectSource_sourceId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "researchProjectSource_sourceId_fkey",
+          "public",
+          "\"public\".\"researchProjectSource\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop constraint \"researchProjectSource_sourceId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"researchProjectSource\" DROP CONSTRAINT \"researchProjectSource_sourceId_fkey\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"researchProjectSource_sourceId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "researchProjectSource_sourceId_fkey",
+          "public",
+          "\"public\".\"researchProjectSource\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "researchSource.preserve-existing-source-data",
+    "label": "Preserve existing source data while migrating source to researchSource",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [
+      {
+        "description": "old source table exists and researchSource does not exist",
+        "sql": "\n              SELECT\n                EXISTS (\n                  SELECT 1\n                  FROM information_schema.tables\n                  WHERE table_schema = 'public'\n                    AND table_name = 'source'\n                )\n                AND NOT EXISTS (\n                  SELECT 1\n                  FROM information_schema.tables\n                  WHERE table_schema = 'public'\n                    AND table_name = 'researchSource'\n                )\n            "
+      }
+    ],
+    "execute": [
+      {
+        "description": "rename source table to researchSource",
+        "sql": "\n              ALTER TABLE \"public\".\"source\"\n              RENAME TO \"researchSource\"\n            "
+      },
+      {
+        "description": "rename source sequence to researchSource sequence",
+        "sql": "\n              ALTER SEQUENCE \"public\".\"source_id_seq\"\n              RENAME TO \"researchSource_id_seq\"\n            "
+      },
+      {
+        "description": "rename source primary key",
+        "sql": "\n              ALTER TABLE \"public\".\"researchSource\"\n              RENAME CONSTRAINT \"source_pkey\"\n              TO \"researchSource_pkey\"\n            "
+      },
+      {
+        "description": "rename source unique constraint",
+        "sql": "\n              ALTER TABLE \"public\".\"researchSource\"\n              RENAME CONSTRAINT \"source_url_key\"\n              TO \"researchSource_url_key\"\n            "
+      },
+      {
+        "description": "rename collectedAt to accessedAt",
+        "sql": "\n              ALTER TABLE \"public\".\"researchSource\"\n              RENAME COLUMN \"collectedAt\"\n              TO \"accessedAt\"\n            "
+      },
+      {
+        "description": "remove accessedAt not null constraint",
+        "sql": "\n              ALTER TABLE \"public\".\"researchSource\"\n              ALTER COLUMN \"accessedAt\"\n              DROP NOT NULL\n            "
+      },
+      {
+        "description": "remove accessedAt default",
+        "sql": "\n              ALTER TABLE \"public\".\"researchSource\"\n              ALTER COLUMN \"accessedAt\"\n              DROP DEFAULT\n            "
+      },
+      {
+        "description": "rename notes to summary",
+        "sql": "\n              ALTER TABLE \"public\".\"researchSource\"\n              RENAME COLUMN \"notes\"\n              TO \"summary\"\n            "
+      },
+      {
+        "description": "rename publicationDate to publishedAt",
+        "sql": "\n              ALTER TABLE \"public\".\"researchSource\"\n              RENAME COLUMN \"publicationDate\"\n              TO \"publishedAt\"\n            "
+      },
+      {
+        "description": "add canonicalUrl",
+        "sql": "\n              ALTER TABLE \"public\".\"researchSource\"\n              ADD COLUMN \"canonicalUrl\" text\n            "
+      },
+      {
+        "description": "add createdAt",
+        "sql": "\n              ALTER TABLE \"public\".\"researchSource\"\n              ADD COLUMN \"createdAt\" timestamptz DEFAULT now() NOT NULL\n            "
+      },
+      {
+        "description": "add language",
+        "sql": "\n              ALTER TABLE \"public\".\"researchSource\"\n              ADD COLUMN \"language\" text\n            "
+      },
+      {
+        "description": "add updatedAt with a temporary default",
+        "sql": "\n              ALTER TABLE \"public\".\"researchSource\"\n              ADD COLUMN \"updatedAt\" timestamptz DEFAULT now() NOT NULL\n            "
+      },
+      {
+        "description": "remove temporary updatedAt default",
+        "sql": "\n              ALTER TABLE \"public\".\"researchSource\"\n              ALTER COLUMN \"updatedAt\"\n              DROP DEFAULT\n            "
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "researchSource exists and source no longer exists",
+        "sql": "\n              SELECT\n                EXISTS (\n                  SELECT 1\n                  FROM information_schema.tables\n                  WHERE table_schema = 'public'\n                    AND table_name = 'researchSource'\n                )\n                AND NOT EXISTS (\n                  SELECT 1\n                  FROM information_schema.tables\n                  WHERE table_schema = 'public'\n                    AND table_name = 'source'\n                )\n            "
+      }
+    ]
+  },
+  {
+    "id": "table.researchClaim",
+    "label": "Create table \"researchClaim\"",
+    "summary": "Creates table \"researchClaim\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "researchClaim"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"researchClaim\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchClaim\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"researchClaim\"",
+        "sql": "CREATE TABLE \"public\".\"researchClaim\" (\n  \"classification\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"importance\" text DEFAULT 'MEDIUM' NOT NULL,\n  \"researchProjectId\" int4 NOT NULL,\n  \"statement\" text NOT NULL,\n  \"status\" text DEFAULT 'UNVERIFIED' NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"researchClaim\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchClaim\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.researchConclusion",
+    "label": "Create table \"researchConclusion\"",
+    "summary": "Creates table \"researchConclusion\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "researchConclusion"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"researchConclusion\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchConclusion\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"researchConclusion\"",
+        "sql": "CREATE TABLE \"public\".\"researchConclusion\" (\n  \"conclusionType\" text NOT NULL,\n  \"confidence\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"researchProjectId\" int4 NOT NULL,\n  \"summary\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"researchConclusion\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchConclusion\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.researchEvidence",
+    "label": "Create table \"researchEvidence\"",
+    "summary": "Creates table \"researchEvidence\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "researchEvidence"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"researchEvidence\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchEvidence\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"researchEvidence\"",
+        "sql": "CREATE TABLE \"public\".\"researchEvidence\" (\n  \"claimId\" int4 NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"evidenceText\" text NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"relationship\" text NOT NULL,\n  \"researchProjectId\" int4 NOT NULL,\n  \"sourceId\" int4 NOT NULL,\n  \"sourceLocator\" text,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"researchEvidence\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchEvidence\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.articleCitation.evidenceId",
+    "label": "Add column \"evidenceId\" to \"articleCitation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "evidenceId",
+        "table": "articleCitation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"evidenceId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "articleCitation",
+          "evidenceId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"evidenceId\"",
+        "sql": "ALTER TABLE \"public\".\"articleCitation\" ADD COLUMN \"evidenceId\" int4"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"evidenceId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "articleCitation",
+          "evidenceId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.researchNote.claimId",
+    "label": "Add column \"claimId\" to \"researchNote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "claimId",
+        "table": "researchNote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"claimId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "researchNote",
+          "claimId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"claimId\"",
+        "sql": "ALTER TABLE \"public\".\"researchNote\" ADD COLUMN \"claimId\" int4"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"claimId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "researchNote",
+          "claimId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.researchNote.sourceId",
+    "label": "Add column \"sourceId\" to \"researchNote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "sourceId",
+        "table": "researchNote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"sourceId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "researchNote",
+          "sourceId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"sourceId\"",
+        "sql": "ALTER TABLE \"public\".\"researchNote\" ADD COLUMN \"sourceId\" int4"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"sourceId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "researchNote",
+          "sourceId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.researchProject.completedAt",
+    "label": "Add column \"completedAt\" to \"researchProject\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "completedAt",
+        "table": "researchProject"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"completedAt\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "researchProject",
+          "completedAt"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"completedAt\"",
+        "sql": "ALTER TABLE \"public\".\"researchProject\" ADD COLUMN \"completedAt\" timestamptz"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"completedAt\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "researchProject",
+          "completedAt"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.researchProject.objective",
+    "label": "Add column \"objective\" to \"researchProject\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "objective",
+        "table": "researchProject"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"objective\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "researchProject",
+          "objective"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"objective\"",
+        "sql": "ALTER TABLE \"public\".\"researchProject\" ADD COLUMN \"objective\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"objective\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "researchProject",
+          "objective"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.researchProject.startedAt",
+    "label": "Add column \"startedAt\" to \"researchProject\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "startedAt",
+        "table": "researchProject"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"startedAt\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "researchProject",
+          "startedAt"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"startedAt\"",
+        "sql": "ALTER TABLE \"public\".\"researchProject\" ADD COLUMN \"startedAt\" timestamptz"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"startedAt\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "researchProject",
+          "startedAt"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.researchProjectSource.createdAt",
+    "label": "Add column \"createdAt\" to \"researchProjectSource\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "createdAt",
+        "table": "researchProjectSource"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"createdAt\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "researchProjectSource",
+          "createdAt"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"createdAt\"",
+        "sql": "ALTER TABLE \"public\".\"researchProjectSource\" ADD COLUMN \"createdAt\" timestamptz DEFAULT (now()) NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"createdAt\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "researchProjectSource",
+          "createdAt"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.researchProjectSource.relevance",
+    "label": "Add column \"relevance\" to \"researchProjectSource\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "relevance",
+        "table": "researchProjectSource"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"relevance\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "researchProjectSource",
+          "relevance"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"relevance\"",
+        "sql": "ALTER TABLE \"public\".\"researchProjectSource\" ADD COLUMN \"relevance\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"relevance\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "researchProjectSource",
+          "relevance"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.researchProjectSource.role",
+    "label": "Add column \"role\" to \"researchProjectSource\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "role",
+        "table": "researchProjectSource"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"role\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "researchProjectSource",
+          "role"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"role\"",
+        "sql": "ALTER TABLE \"public\".\"researchProjectSource\" ADD COLUMN \"role\" text DEFAULT 'SECONDARY' NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"role\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "researchProjectSource",
+          "role"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.researchProject.slug",
+    "label": "Add column \"slug\" to \"researchProject\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "slug",
+        "table": "researchProject"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"slug\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "researchProject",
+          "slug"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"slug\"",
+        "sql": "ALTER TABLE \"public\".\"researchProject\" ADD COLUMN \"slug\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"slug\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "researchProject",
+          "slug"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "researchProject.backfill-slug",
+    "label": "Backfill researchProject slugs",
+    "operationClass": "data",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [
+      {
+        "description": "researchProject rows still have null slugs",
+        "sql": "\n              SELECT EXISTS (\n                SELECT 1\n                FROM \"public\".\"researchProject\"\n                WHERE \"slug\" IS NULL\n                LIMIT 1\n              )\n            "
+      }
+    ],
+    "execute": [
+      {
+        "description": "generate unique researchProject slugs",
+        "sql": "\n              UPDATE \"public\".\"researchProject\"\n              SET \"slug\" =\n                COALESCE(\n                  NULLIF(\n                    trim(\n                      both '-'\n                      from regexp_replace(\n                        lower(trim(\"title\")),\n                        '[^a-z0-9]+',\n                        '-',\n                        'g'\n                      )\n                    ),\n                    ''\n                  ),\n                  'research-project'\n                )\n                || '-'\n                || \"id\"\n              WHERE \"slug\" IS NULL\n            "
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "all researchProject rows have slugs",
+        "sql": "\n              SELECT NOT EXISTS (\n                SELECT 1\n                FROM \"public\".\"researchProject\"\n                WHERE \"slug\" IS NULL\n                LIMIT 1\n              )\n            "
+      }
+    ]
+  },
+  {
+    "id": "alterNullability.setNotNull.researchProject.slug",
+    "label": "Set NOT NULL on \"researchProject\".\"slug\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "slug",
+        "table": "researchProject"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"slug\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "researchProject",
+          "slug"
+        ]
+      },
+      {
+        "description": "ensure no NULL values in \"slug\"",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"public\".\"researchProject\" WHERE \"slug\" IS NULL) AS \"result\"",
+        "params": []
+      }
+    ],
+    "execute": [
+      {
+        "description": "set NOT NULL on \"slug\"",
+        "sql": "ALTER TABLE \"public\".\"researchProject\" ALTER COLUMN \"slug\" SET NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"slug\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "researchProject",
+          "slug",
+          "NO"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "setDefault.researchProject.status",
+    "label": "Set default on \"researchProject\".\"status\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "status",
+        "table": "researchProject"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"status\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "researchProject",
+          "status"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "set default on \"status\"",
+        "sql": "ALTER TABLE \"public\".\"researchProject\" ALTER COLUMN \"status\" SET DEFAULT 'DRAFT'"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"status\" has a default",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"column_default\" IS NOT NULL)) AS \"result\"",
+        "params": [
+          "public",
+          "researchProject",
+          "status"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.researchProject.researchProject_slug_key",
+    "label": "Add unique constraint on \"researchProject\" (slug)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "researchProject_slug_key",
+        "table": "researchProject"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"researchProject_slug_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "researchProject_slug_key",
+          "public",
+          "\"public\".\"researchProject\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"researchProject_slug_key\"",
+        "sql": "ALTER TABLE \"public\".\"researchProject\" ADD CONSTRAINT \"researchProject_slug_key\" UNIQUE (\"slug\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"researchProject_slug_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "researchProject_slug_key",
+          "public",
+          "\"public\".\"researchProject\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.articleCitation.articleCitation_evidenceId_idx_a3fff281",
+    "label": "Create index \"articleCitation_evidenceId_idx_a3fff281\" on \"articleCitation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "articleCitation_evidenceId_idx_a3fff281",
+        "table": "articleCitation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"articleCitation_evidenceId_idx_a3fff281\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"articleCitation_evidenceId_idx_a3fff281\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"articleCitation_evidenceId_idx_a3fff281\"",
+        "sql": "CREATE INDEX \"articleCitation_evidenceId_idx_a3fff281\" ON \"public\".\"articleCitation\" (\"evidenceId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"articleCitation_evidenceId_idx_a3fff281\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"articleCitation_evidenceId_idx_a3fff281\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.researchClaim.researchClaim_classification_idx_52f80099",
+    "label": "Create index \"researchClaim_classification_idx_52f80099\" on \"researchClaim\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "researchClaim_classification_idx_52f80099",
+        "table": "researchClaim"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"researchClaim_classification_idx_52f80099\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchClaim_classification_idx_52f80099\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"researchClaim_classification_idx_52f80099\"",
+        "sql": "CREATE INDEX \"researchClaim_classification_idx_52f80099\" ON \"public\".\"researchClaim\" (\"classification\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"researchClaim_classification_idx_52f80099\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchClaim_classification_idx_52f80099\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.researchClaim.researchClaim_importance_idx_d8c1c450",
+    "label": "Create index \"researchClaim_importance_idx_d8c1c450\" on \"researchClaim\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "researchClaim_importance_idx_d8c1c450",
+        "table": "researchClaim"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"researchClaim_importance_idx_d8c1c450\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchClaim_importance_idx_d8c1c450\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"researchClaim_importance_idx_d8c1c450\"",
+        "sql": "CREATE INDEX \"researchClaim_importance_idx_d8c1c450\" ON \"public\".\"researchClaim\" (\"importance\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"researchClaim_importance_idx_d8c1c450\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchClaim_importance_idx_d8c1c450\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.researchClaim.researchClaim_researchProjectId_idx_a0714495",
+    "label": "Create index \"researchClaim_researchProjectId_idx_a0714495\" on \"researchClaim\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "researchClaim_researchProjectId_idx_a0714495",
+        "table": "researchClaim"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"researchClaim_researchProjectId_idx_a0714495\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchClaim_researchProjectId_idx_a0714495\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"researchClaim_researchProjectId_idx_a0714495\"",
+        "sql": "CREATE INDEX \"researchClaim_researchProjectId_idx_a0714495\" ON \"public\".\"researchClaim\" (\"researchProjectId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"researchClaim_researchProjectId_idx_a0714495\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchClaim_researchProjectId_idx_a0714495\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.researchClaim.researchClaim_status_idx_e98638ab",
+    "label": "Create index \"researchClaim_status_idx_e98638ab\" on \"researchClaim\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "researchClaim_status_idx_e98638ab",
+        "table": "researchClaim"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"researchClaim_status_idx_e98638ab\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchClaim_status_idx_e98638ab\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"researchClaim_status_idx_e98638ab\"",
+        "sql": "CREATE INDEX \"researchClaim_status_idx_e98638ab\" ON \"public\".\"researchClaim\" (\"status\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"researchClaim_status_idx_e98638ab\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchClaim_status_idx_e98638ab\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.researchConclusion.researchConclusion_conclusionType_idx_233ac5f6",
+    "label": "Create index \"researchConclusion_conclusionType_idx_233ac5f6\" on \"researchConclusion\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "researchConclusion_conclusionType_idx_233ac5f6",
+        "table": "researchConclusion"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"researchConclusion_conclusionType_idx_233ac5f6\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchConclusion_conclusionType_idx_233ac5f6\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"researchConclusion_conclusionType_idx_233ac5f6\"",
+        "sql": "CREATE INDEX \"researchConclusion_conclusionType_idx_233ac5f6\" ON \"public\".\"researchConclusion\" (\"conclusionType\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"researchConclusion_conclusionType_idx_233ac5f6\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchConclusion_conclusionType_idx_233ac5f6\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.researchConclusion.researchConclusion_confidence_idx_37921071",
+    "label": "Create index \"researchConclusion_confidence_idx_37921071\" on \"researchConclusion\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "researchConclusion_confidence_idx_37921071",
+        "table": "researchConclusion"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"researchConclusion_confidence_idx_37921071\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchConclusion_confidence_idx_37921071\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"researchConclusion_confidence_idx_37921071\"",
+        "sql": "CREATE INDEX \"researchConclusion_confidence_idx_37921071\" ON \"public\".\"researchConclusion\" (\"confidence\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"researchConclusion_confidence_idx_37921071\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchConclusion_confidence_idx_37921071\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.researchConclusion.researchConclusion_researchProjectId_idx_a0714495",
+    "label": "Create index \"researchConclusion_researchProjectId_idx_a0714495\" on \"researchConclusion\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "researchConclusion_researchProjectId_idx_a0714495",
+        "table": "researchConclusion"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"researchConclusion_researchProjectId_idx_a0714495\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchConclusion_researchProjectId_idx_a0714495\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"researchConclusion_researchProjectId_idx_a0714495\"",
+        "sql": "CREATE INDEX \"researchConclusion_researchProjectId_idx_a0714495\" ON \"public\".\"researchConclusion\" (\"researchProjectId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"researchConclusion_researchProjectId_idx_a0714495\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchConclusion_researchProjectId_idx_a0714495\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.researchEvidence.researchEvidence_claimId_idx_7fdfe387",
+    "label": "Create index \"researchEvidence_claimId_idx_7fdfe387\" on \"researchEvidence\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "researchEvidence_claimId_idx_7fdfe387",
+        "table": "researchEvidence"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"researchEvidence_claimId_idx_7fdfe387\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchEvidence_claimId_idx_7fdfe387\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"researchEvidence_claimId_idx_7fdfe387\"",
+        "sql": "CREATE INDEX \"researchEvidence_claimId_idx_7fdfe387\" ON \"public\".\"researchEvidence\" (\"claimId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"researchEvidence_claimId_idx_7fdfe387\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchEvidence_claimId_idx_7fdfe387\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.researchEvidence.researchEvidence_relationship_idx_95478b08",
+    "label": "Create index \"researchEvidence_relationship_idx_95478b08\" on \"researchEvidence\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "researchEvidence_relationship_idx_95478b08",
+        "table": "researchEvidence"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"researchEvidence_relationship_idx_95478b08\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchEvidence_relationship_idx_95478b08\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"researchEvidence_relationship_idx_95478b08\"",
+        "sql": "CREATE INDEX \"researchEvidence_relationship_idx_95478b08\" ON \"public\".\"researchEvidence\" (\"relationship\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"researchEvidence_relationship_idx_95478b08\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchEvidence_relationship_idx_95478b08\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.researchEvidence.researchEvidence_researchProjectId_idx_a0714495",
+    "label": "Create index \"researchEvidence_researchProjectId_idx_a0714495\" on \"researchEvidence\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "researchEvidence_researchProjectId_idx_a0714495",
+        "table": "researchEvidence"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"researchEvidence_researchProjectId_idx_a0714495\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchEvidence_researchProjectId_idx_a0714495\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"researchEvidence_researchProjectId_idx_a0714495\"",
+        "sql": "CREATE INDEX \"researchEvidence_researchProjectId_idx_a0714495\" ON \"public\".\"researchEvidence\" (\"researchProjectId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"researchEvidence_researchProjectId_idx_a0714495\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchEvidence_researchProjectId_idx_a0714495\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.researchEvidence.researchEvidence_sourceId_idx_d92a2571",
+    "label": "Create index \"researchEvidence_sourceId_idx_d92a2571\" on \"researchEvidence\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "researchEvidence_sourceId_idx_d92a2571",
+        "table": "researchEvidence"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"researchEvidence_sourceId_idx_d92a2571\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchEvidence_sourceId_idx_d92a2571\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"researchEvidence_sourceId_idx_d92a2571\"",
+        "sql": "CREATE INDEX \"researchEvidence_sourceId_idx_d92a2571\" ON \"public\".\"researchEvidence\" (\"sourceId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"researchEvidence_sourceId_idx_d92a2571\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchEvidence_sourceId_idx_d92a2571\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.researchNote.researchNote_claimId_idx_7fdfe387",
+    "label": "Create index \"researchNote_claimId_idx_7fdfe387\" on \"researchNote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "researchNote_claimId_idx_7fdfe387",
+        "table": "researchNote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"researchNote_claimId_idx_7fdfe387\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchNote_claimId_idx_7fdfe387\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"researchNote_claimId_idx_7fdfe387\"",
+        "sql": "CREATE INDEX \"researchNote_claimId_idx_7fdfe387\" ON \"public\".\"researchNote\" (\"claimId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"researchNote_claimId_idx_7fdfe387\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchNote_claimId_idx_7fdfe387\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.researchNote.researchNote_noteType_idx_544bb06b",
+    "label": "Create index \"researchNote_noteType_idx_544bb06b\" on \"researchNote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "researchNote_noteType_idx_544bb06b",
+        "table": "researchNote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"researchNote_noteType_idx_544bb06b\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchNote_noteType_idx_544bb06b\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"researchNote_noteType_idx_544bb06b\"",
+        "sql": "CREATE INDEX \"researchNote_noteType_idx_544bb06b\" ON \"public\".\"researchNote\" (\"noteType\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"researchNote_noteType_idx_544bb06b\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchNote_noteType_idx_544bb06b\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.researchNote.researchNote_sourceId_idx_d92a2571",
+    "label": "Create index \"researchNote_sourceId_idx_d92a2571\" on \"researchNote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "researchNote_sourceId_idx_d92a2571",
+        "table": "researchNote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"researchNote_sourceId_idx_d92a2571\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchNote_sourceId_idx_d92a2571\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"researchNote_sourceId_idx_d92a2571\"",
+        "sql": "CREATE INDEX \"researchNote_sourceId_idx_d92a2571\" ON \"public\".\"researchNote\" (\"sourceId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"researchNote_sourceId_idx_d92a2571\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchNote_sourceId_idx_d92a2571\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.researchProject.researchProject_createdAt_idx_9575dbd7",
+    "label": "Create index \"researchProject_createdAt_idx_9575dbd7\" on \"researchProject\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "researchProject_createdAt_idx_9575dbd7",
+        "table": "researchProject"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"researchProject_createdAt_idx_9575dbd7\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchProject_createdAt_idx_9575dbd7\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"researchProject_createdAt_idx_9575dbd7\"",
+        "sql": "CREATE INDEX \"researchProject_createdAt_idx_9575dbd7\" ON \"public\".\"researchProject\" (\"createdAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"researchProject_createdAt_idx_9575dbd7\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchProject_createdAt_idx_9575dbd7\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.researchProjectSource.researchProjectSource_role_idx_2c1ddf83",
+    "label": "Create index \"researchProjectSource_role_idx_2c1ddf83\" on \"researchProjectSource\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "researchProjectSource_role_idx_2c1ddf83",
+        "table": "researchProjectSource"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"researchProjectSource_role_idx_2c1ddf83\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchProjectSource_role_idx_2c1ddf83\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"researchProjectSource_role_idx_2c1ddf83\"",
+        "sql": "CREATE INDEX \"researchProjectSource_role_idx_2c1ddf83\" ON \"public\".\"researchProjectSource\" (\"role\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"researchProjectSource_role_idx_2c1ddf83\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchProjectSource_role_idx_2c1ddf83\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.researchSource.researchSource_publishedAt_idx_36121b91",
+    "label": "Create index \"researchSource_publishedAt_idx_36121b91\" on \"researchSource\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "researchSource_publishedAt_idx_36121b91",
+        "table": "researchSource"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"researchSource_publishedAt_idx_36121b91\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchSource_publishedAt_idx_36121b91\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"researchSource_publishedAt_idx_36121b91\"",
+        "sql": "CREATE INDEX \"researchSource_publishedAt_idx_36121b91\" ON \"public\".\"researchSource\" (\"publishedAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"researchSource_publishedAt_idx_36121b91\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchSource_publishedAt_idx_36121b91\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.researchSource.researchSource_publisher_idx_8592540b",
+    "label": "Create index \"researchSource_publisher_idx_8592540b\" on \"researchSource\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "researchSource_publisher_idx_8592540b",
+        "table": "researchSource"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"researchSource_publisher_idx_8592540b\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchSource_publisher_idx_8592540b\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"researchSource_publisher_idx_8592540b\"",
+        "sql": "CREATE INDEX \"researchSource_publisher_idx_8592540b\" ON \"public\".\"researchSource\" (\"publisher\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"researchSource_publisher_idx_8592540b\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchSource_publisher_idx_8592540b\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.researchSource.researchSource_sourceType_idx_d8b2a801",
+    "label": "Create index \"researchSource_sourceType_idx_d8b2a801\" on \"researchSource\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "researchSource_sourceType_idx_d8b2a801",
+        "table": "researchSource"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"researchSource_sourceType_idx_d8b2a801\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchSource_sourceType_idx_d8b2a801\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"researchSource_sourceType_idx_d8b2a801\"",
+        "sql": "CREATE INDEX \"researchSource_sourceType_idx_d8b2a801\" ON \"public\".\"researchSource\" (\"sourceType\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"researchSource_sourceType_idx_d8b2a801\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"researchSource_sourceType_idx_d8b2a801\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.researchClaim.researchClaim_researchProjectId_fkey",
+    "label": "Add foreign key \"researchClaim_researchProjectId_fkey\" on \"researchClaim\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "researchClaim_researchProjectId_fkey",
+        "table": "researchClaim"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"researchClaim_researchProjectId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "researchClaim_researchProjectId_fkey",
+          "public",
+          "\"public\".\"researchClaim\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"researchClaim_researchProjectId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"researchClaim\"\nADD CONSTRAINT \"researchClaim_researchProjectId_fkey\"\nFOREIGN KEY (\"researchProjectId\")\nREFERENCES \"public\".\"researchProject\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"researchClaim_researchProjectId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "researchClaim_researchProjectId_fkey",
+          "public",
+          "\"public\".\"researchClaim\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.researchConclusion.researchConclusion_researchProjectId_fkey",
+    "label": "Add foreign key \"researchConclusion_researchProjectId_fkey\" on \"researchConclusion\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "researchConclusion_researchProjectId_fkey",
+        "table": "researchConclusion"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"researchConclusion_researchProjectId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "researchConclusion_researchProjectId_fkey",
+          "public",
+          "\"public\".\"researchConclusion\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"researchConclusion_researchProjectId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"researchConclusion\"\nADD CONSTRAINT \"researchConclusion_researchProjectId_fkey\"\nFOREIGN KEY (\"researchProjectId\")\nREFERENCES \"public\".\"researchProject\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"researchConclusion_researchProjectId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "researchConclusion_researchProjectId_fkey",
+          "public",
+          "\"public\".\"researchConclusion\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.researchEvidence.researchEvidence_researchProjectId_fkey",
+    "label": "Add foreign key \"researchEvidence_researchProjectId_fkey\" on \"researchEvidence\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "researchEvidence_researchProjectId_fkey",
+        "table": "researchEvidence"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"researchEvidence_researchProjectId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "researchEvidence_researchProjectId_fkey",
+          "public",
+          "\"public\".\"researchEvidence\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"researchEvidence_researchProjectId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"researchEvidence\"\nADD CONSTRAINT \"researchEvidence_researchProjectId_fkey\"\nFOREIGN KEY (\"researchProjectId\")\nREFERENCES \"public\".\"researchProject\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"researchEvidence_researchProjectId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "researchEvidence_researchProjectId_fkey",
+          "public",
+          "\"public\".\"researchEvidence\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.researchEvidence.researchEvidence_claimId_fkey",
+    "label": "Add foreign key \"researchEvidence_claimId_fkey\" on \"researchEvidence\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "researchEvidence_claimId_fkey",
+        "table": "researchEvidence"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"researchEvidence_claimId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "researchEvidence_claimId_fkey",
+          "public",
+          "\"public\".\"researchEvidence\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"researchEvidence_claimId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"researchEvidence\"\nADD CONSTRAINT \"researchEvidence_claimId_fkey\"\nFOREIGN KEY (\"claimId\")\nREFERENCES \"public\".\"researchClaim\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"researchEvidence_claimId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "researchEvidence_claimId_fkey",
+          "public",
+          "\"public\".\"researchEvidence\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.researchEvidence.researchEvidence_sourceId_fkey",
+    "label": "Add foreign key \"researchEvidence_sourceId_fkey\" on \"researchEvidence\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "researchEvidence_sourceId_fkey",
+        "table": "researchEvidence"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"researchEvidence_sourceId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "researchEvidence_sourceId_fkey",
+          "public",
+          "\"public\".\"researchEvidence\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"researchEvidence_sourceId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"researchEvidence\"\nADD CONSTRAINT \"researchEvidence_sourceId_fkey\"\nFOREIGN KEY (\"sourceId\")\nREFERENCES \"public\".\"researchSource\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"researchEvidence_sourceId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "researchEvidence_sourceId_fkey",
+          "public",
+          "\"public\".\"researchEvidence\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.articleCitation.articleCitation_evidenceId_fkey",
+    "label": "Add foreign key \"articleCitation_evidenceId_fkey\" on \"articleCitation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "articleCitation_evidenceId_fkey",
+        "table": "articleCitation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"articleCitation_evidenceId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "articleCitation_evidenceId_fkey",
+          "public",
+          "\"public\".\"articleCitation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"articleCitation_evidenceId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"articleCitation\"\nADD CONSTRAINT \"articleCitation_evidenceId_fkey\"\nFOREIGN KEY (\"evidenceId\")\nREFERENCES \"public\".\"researchEvidence\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"articleCitation_evidenceId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "articleCitation_evidenceId_fkey",
+          "public",
+          "\"public\".\"articleCitation\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.researchNote.researchNote_claimId_fkey",
+    "label": "Add foreign key \"researchNote_claimId_fkey\" on \"researchNote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "researchNote_claimId_fkey",
+        "table": "researchNote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"researchNote_claimId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "researchNote_claimId_fkey",
+          "public",
+          "\"public\".\"researchNote\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"researchNote_claimId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"researchNote\"\nADD CONSTRAINT \"researchNote_claimId_fkey\"\nFOREIGN KEY (\"claimId\")\nREFERENCES \"public\".\"researchClaim\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"researchNote_claimId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "researchNote_claimId_fkey",
+          "public",
+          "\"public\".\"researchNote\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.articleCitation.articleCitation_sourceId_fkey",
+    "label": "Add foreign key \"articleCitation_sourceId_fkey\" on \"articleCitation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "articleCitation_sourceId_fkey",
+        "table": "articleCitation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"articleCitation_sourceId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "articleCitation_sourceId_fkey",
+          "public",
+          "\"public\".\"articleCitation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"articleCitation_sourceId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"articleCitation\"\nADD CONSTRAINT \"articleCitation_sourceId_fkey\"\nFOREIGN KEY (\"sourceId\")\nREFERENCES \"public\".\"researchSource\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"articleCitation_sourceId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "articleCitation_sourceId_fkey",
+          "public",
+          "\"public\".\"articleCitation\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.researchNote.researchNote_sourceId_fkey",
+    "label": "Add foreign key \"researchNote_sourceId_fkey\" on \"researchNote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "researchNote_sourceId_fkey",
+        "table": "researchNote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"researchNote_sourceId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "researchNote_sourceId_fkey",
+          "public",
+          "\"public\".\"researchNote\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"researchNote_sourceId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"researchNote\"\nADD CONSTRAINT \"researchNote_sourceId_fkey\"\nFOREIGN KEY (\"sourceId\")\nREFERENCES \"public\".\"researchSource\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"researchNote_sourceId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "researchNote_sourceId_fkey",
+          "public",
+          "\"public\".\"researchNote\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.researchProjectSource.researchProjectSource_sourceId_fkey",
+    "label": "Add foreign key \"researchProjectSource_sourceId_fkey\" on \"researchProjectSource\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "researchProjectSource_sourceId_fkey",
+        "table": "researchProjectSource"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"researchProjectSource_sourceId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "researchProjectSource_sourceId_fkey",
+          "public",
+          "\"public\".\"researchProjectSource\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"researchProjectSource_sourceId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"researchProjectSource\"\nADD CONSTRAINT \"researchProjectSource_sourceId_fkey\"\nFOREIGN KEY (\"sourceId\")\nREFERENCES \"public\".\"researchSource\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"researchProjectSource_sourceId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "researchProjectSource_sourceId_fkey",
+          "public",
+          "\"public\".\"researchProjectSource\""
+        ]
+      }
+    ]
+  }
+]

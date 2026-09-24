@@ -1,0 +1,277 @@
+// use prisma-8
+model Game {
+  id          Int                        @id @default(autoincrement())
+  name        String
+  slug        String                     @unique
+  description String?
+  logo        String?
+  isActive    Boolean                    @default(true)
+  createdAt   TimestamptzString          @default(now())
+  updatedAt   temporal.updatedAtString()
+
+  patches     Patch[]
+  articles    Article[]
+  researches  ResearchProject[]
+}
+
+model Patch {
+  id          Int                        @id @default(autoincrement())
+  gameId      Int
+  version     String
+  title       String
+  description String?
+  releaseDate TimestamptzString?
+  createdAt   TimestamptzString          @default(now())
+  updatedAt   temporal.updatedAtString()
+
+  game        Game                       @relation(fields:[gameId], references:[id])
+  articles    Article[]
+
+  @@unique([gameId, version])
+  @@index([gameId])
+}
+
+model Article {
+  id            Int                        @id @default(autoincrement())
+  gameId        Int
+  patchId       Int?
+  title         String
+  slug          String                     @unique
+  excerpt       String?
+  content       String
+  featuredImage String?
+
+  status        String                     @default("DRAFT")
+
+  publishedAt   TimestamptzString?
+  createdAt     TimestamptzString          @default(now())
+  updatedAt     temporal.updatedAtString()
+
+  game          Game                       @relation(fields:[gameId], references:[id])
+  patch         Patch?                     @relation(fields:[patchId], references:[id])
+  categories    ArticleCategory[]
+  tags          ArticleTag[]
+  citations     ArticleCitation[]
+
+  @@index([gameId])
+  @@index([patchId])
+  @@index([status])
+  @@index([publishedAt])
+}
+
+model Category {
+  id          Int                        @id @default(autoincrement())
+  name        String
+  slug        String                     @unique
+  description String?
+  createdAt   TimestamptzString          @default(now())
+  updatedAt   temporal.updatedAtString()
+
+  articles    ArticleCategory[]
+}
+
+model Tag {
+  id        Int               @id @default(autoincrement())
+  name      String
+  slug      String            @unique
+  createdAt TimestamptzString @default(now())
+
+  articles  ArticleTag[]
+}
+
+model ArticleCategory {
+  articleId  Int
+  categoryId Int
+
+  article    Article  @relation(fields:[articleId], references:[id])
+  category   Category @relation(fields:[categoryId], references:[id])
+
+  @@id([articleId, categoryId])
+  @@index([categoryId])
+}
+
+model ArticleTag {
+  articleId Int
+  tagId     Int
+
+  article   Article @relation(fields:[articleId], references:[id])
+  tag       Tag     @relation(fields:[tagId], references:[id])
+
+  @@id([articleId, tagId])
+  @@index([tagId])
+}
+
+model ResearchProject {
+  id               Int                        @id @default(autoincrement())
+  gameId           Int
+  title            String
+  slug             String                     @unique
+  researchQuestion String?
+  objective        String?
+
+  status           String                     @default("DRAFT")
+
+  startedAt        TimestamptzString?
+  completedAt      TimestamptzString?
+
+  createdAt        TimestamptzString          @default(now())
+  updatedAt        temporal.updatedAtString()
+
+  game             Game                       @relation(fields:[gameId], references:[id])
+  sources          ResearchProjectSource[]
+  notes            ResearchNote[]
+  claims           ResearchClaim[]
+  conclusions      ResearchConclusion[]
+
+  @@index([gameId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model ResearchSource {
+  id               Int                        @id @default(autoincrement())
+  title            String
+  url              String                     @unique
+  canonicalUrl     String?
+  publisher        String?
+  author           String?
+
+  sourceType       String
+  publishedAt      TimestamptzString?
+  accessedAt       TimestamptzString?
+
+  language         String?
+  summary          String?
+  reliability      String                     @default("MEDIUM")
+
+  createdAt        TimestamptzString          @default(now())
+  updatedAt        temporal.updatedAtString()
+
+  researchProjects ResearchProjectSource[]
+  notes            ResearchNote[]
+  evidence         ResearchEvidence[]
+  citations        ArticleCitation[]
+
+  @@index([publisher])
+  @@index([sourceType])
+  @@index([publishedAt])
+}
+
+model ResearchProjectSource {
+  researchProjectId Int
+  sourceId          Int
+
+  relevance         String?
+  role              String            @default("SECONDARY")
+  createdAt         TimestamptzString @default(now())
+
+  researchProject   ResearchProject   @relation(fields:[researchProjectId], references:[id])
+  source            ResearchSource    @relation(fields:[sourceId], references:[id])
+
+  @@id([researchProjectId, sourceId])
+  @@index([sourceId])
+  @@index([role])
+}
+
+model ResearchNote {
+  id                Int               @id @default(autoincrement())
+  researchProjectId Int
+  sourceId          Int?
+  claimId           Int?
+
+  title             String
+  content           String
+  noteType          String
+
+  createdAt         TimestamptzString @default(now())
+
+  researchProject   ResearchProject   @relation(fields:[researchProjectId], references:[id])
+  source            ResearchSource?   @relation(fields:[sourceId], references:[id])
+  claim             ResearchClaim?    @relation(fields:[claimId], references:[id])
+
+  @@index([researchProjectId])
+  @@index([sourceId])
+  @@index([claimId])
+  @@index([noteType])
+}
+
+model ResearchClaim {
+  id                Int                        @id @default(autoincrement())
+  researchProjectId Int
+
+  statement         String
+  classification    String
+  status            String                     @default("UNVERIFIED")
+  importance        String                     @default("MEDIUM")
+
+  createdAt         TimestamptzString          @default(now())
+  updatedAt         temporal.updatedAtString()
+
+  researchProject   ResearchProject            @relation(fields:[researchProjectId], references:[id])
+  notes             ResearchNote[]
+  evidence          ResearchEvidence[]
+
+  @@index([researchProjectId])
+  @@index([status])
+  @@index([classification])
+  @@index([importance])
+}
+
+model ResearchEvidence {
+  id                Int                        @id @default(autoincrement())
+  researchProjectId Int
+  claimId           Int
+  sourceId          Int
+
+  evidenceText      String
+  sourceLocator     String?
+  relationship      String
+
+  createdAt         TimestamptzString          @default(now())
+  updatedAt         temporal.updatedAtString()
+
+  researchProject   ResearchProject            @relation(fields:[researchProjectId], references:[id])
+  claim             ResearchClaim              @relation(fields:[claimId], references:[id])
+  source            ResearchSource             @relation(fields:[sourceId], references:[id])
+  citations         ArticleCitation[]
+
+  @@index([researchProjectId])
+  @@index([claimId])
+  @@index([sourceId])
+  @@index([relationship])
+}
+
+model ResearchConclusion {
+  id                Int               @id @default(autoincrement())
+  researchProjectId Int
+
+  summary           String
+  conclusionType    String
+  confidence        String
+
+  createdAt         TimestamptzString @default(now())
+
+  researchProject   ResearchProject   @relation(fields:[researchProjectId], references:[id])
+
+  @@index([researchProjectId])
+  @@index([conclusionType])
+  @@index([confidence])
+}
+
+model ArticleCitation {
+  id         Int               @id @default(autoincrement())
+  articleId  Int
+  sourceId   Int
+  evidenceId Int?
+
+  note       String?
+  excerpt    String?
+
+  article    Article           @relation(fields:[articleId], references:[id])
+  source     ResearchSource    @relation(fields:[sourceId], references:[id])
+  evidence   ResearchEvidence? @relation(fields:[evidenceId], references:[id])
+
+  @@index([articleId])
+  @@index([sourceId])
+  @@index([evidenceId])
+}
