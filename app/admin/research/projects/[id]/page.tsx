@@ -33,6 +33,15 @@ type Claim = {
   importance: string;
 };
 
+type Evidence = {
+  id: number;
+  claimId: number;
+  sourceId: number;
+  evidenceText: string;
+  sourceLocator: string | null;
+  relationship: string;
+};
+
 export default function ResearchProjectDetailPage() {
   const params = useParams<{ id: string }>();
   const [project, setProject] = useState<Project | null>(null);
@@ -49,6 +58,13 @@ export default function ResearchProjectDetailPage() {
   const [claimStatus, setClaimStatus] = useState("OPEN");
   const [claimImportance, setClaimImportance] = useState("MEDIUM");
   const [savingClaim, setSavingClaim] = useState(false);
+  const [evidence, setEvidence] = useState<Evidence[]>([]);
+  const [evidenceClaimId, setEvidenceClaimId] = useState("");
+  const [evidenceSourceId, setEvidenceSourceId] = useState("");
+  const [evidenceText, setEvidenceText] = useState("");
+  const [sourceLocator, setSourceLocator] = useState("");
+  const [relationship, setRelationship] = useState("SUPPORTS");
+  const [savingEvidence, setSavingEvidence] = useState(false);
 
   useEffect(() => {
     fetch(`/api/admin/research/projects/${params.id}`)
@@ -71,6 +87,14 @@ export default function ResearchProjectDetailPage() {
 
         if (claimsResponse.ok) {
           setClaims(await claimsResponse.json());
+        }
+
+        const evidenceResponse = await fetch(
+          `/api/admin/research/evidence?projectId=${params.id}`
+        );
+
+        if (evidenceResponse.ok) {
+          setEvidence(await evidenceResponse.json());
         }
       })
       .catch((err) => setError(err.message));
@@ -147,6 +171,46 @@ export default function ResearchProjectDetailPage() {
       setError(error instanceof Error ? error.message : "Failed to add claim.");
     } finally {
       setSavingClaim(false);
+    }
+  }
+
+  async function handleAddEvidence(
+    event: React.FormEvent<HTMLFormElement>
+  ) {
+    event.preventDefault();
+    setSavingEvidence(true);
+
+    try {
+      const response = await fetch("/api/admin/research/evidence", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          researchProjectId: Number(params.id),
+          claimId: Number(evidenceClaimId),
+          sourceId: Number(evidenceSourceId),
+          evidenceText: evidenceText.trim(),
+          sourceLocator: sourceLocator.trim(),
+          relationship,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to add evidence.");
+      }
+
+      setEvidence((current) => [...current, data]);
+      setEvidenceClaimId("");
+      setEvidenceSourceId("");
+      setEvidenceText("");
+      setSourceLocator("");
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : "Failed to add evidence."
+      );
+    } finally {
+      setSavingEvidence(false);
     }
   }
 
@@ -360,6 +424,112 @@ export default function ResearchProjectDetailPage() {
                   <p className="font-serif text-xl">{claim.statement}</p>
                   <div className="mt-3 text-[10px] font-bold tracking-[0.12em] text-[#B88A3B]">
                     {claim.classification} · {claim.status} · {claim.importance}
+                  </div>
+                </article>
+              ))
+            )}
+          </div>
+
+          <h2 className="text-xs font-bold tracking-[0.16em]">
+            RESEARCH EVIDENCE
+          </h2>
+
+          <form onSubmit={handleAddEvidence} className="mt-6 space-y-5">
+            <label className="block text-[10px] font-bold tracking-[0.16em]">
+              CLAIM
+              <select
+                required
+                value={evidenceClaimId}
+                onChange={(event) => setEvidenceClaimId(event.target.value)}
+                className="mt-2 w-full border-b border-[#CBC9C0] bg-transparent py-3 text-sm outline-none"
+              >
+                <option value="">Select a claim</option>
+                {claims.map((claim) => (
+                  <option key={claim.id} value={claim.id}>
+                    {claim.statement}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="block text-[10px] font-bold tracking-[0.16em]">
+              SOURCE
+              <select
+                required
+                value={evidenceSourceId}
+                onChange={(event) => setEvidenceSourceId(event.target.value)}
+                className="mt-2 w-full border-b border-[#CBC9C0] bg-transparent py-3 text-sm outline-none"
+              >
+                <option value="">Select a source</option>
+                {sources.map((source) => (
+                  <option key={source.id} value={source.id}>
+                    {source.title}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="block text-[10px] font-bold tracking-[0.16em]">
+              EVIDENCE TEXT
+              <textarea
+                required
+                value={evidenceText}
+                onChange={(event) => setEvidenceText(event.target.value)}
+                rows={4}
+                className="mt-2 w-full border border-[#CBC9C0] bg-transparent px-4 py-3 text-sm outline-none"
+                placeholder="Explain how this source supports the claim..."
+              />
+            </label>
+
+            <label className="block text-[10px] font-bold tracking-[0.16em]">
+              SOURCE LOCATOR
+              <input
+                value={sourceLocator}
+                onChange={(event) => setSourceLocator(event.target.value)}
+                placeholder="Page, timestamp, or section"
+                className="mt-2 w-full border-b border-[#CBC9C0] bg-transparent py-3 text-sm outline-none"
+              />
+            </label>
+
+            <label className="block text-[10px] font-bold tracking-[0.16em]">
+              RELATIONSHIP
+              <select
+                value={relationship}
+                onChange={(event) => setRelationship(event.target.value)}
+                className="mt-2 w-full border-b border-[#CBC9C0] bg-transparent py-3 text-sm outline-none"
+              >
+                <option value="SUPPORTS">SUPPORTS</option>
+                <option value="CONTRADICTS">CONTRADICTS</option>
+                <option value="CONTEXTUALIZES">CONTEXTUALIZES</option>
+              </select>
+            </label>
+
+            <button
+              type="submit"
+              disabled={savingEvidence}
+              className="border border-[#1F1D1A] bg-[#1F1D1A] px-6 py-3 text-[10px] font-bold tracking-[0.16em] text-[#FFFAEB] disabled:opacity-50"
+            >
+              {savingEvidence ? "ADDING..." : "ADD EVIDENCE"}
+            </button>
+          </form>
+
+          <div className="mt-8 space-y-4">
+            {evidence.length === 0 ? (
+              <p className="text-sm text-[#4B4A47]">
+                No evidence added yet.
+              </p>
+            ) : (
+              evidence.map((item) => (
+                <article
+                  key={item.id}
+                  className="border-b border-[#CBC9C0] pb-5"
+                >
+                  <p className="text-sm leading-7">{item.evidenceText}</p>
+                  <div className="mt-3 text-[10px] font-bold tracking-[0.12em] text-[#B88A3B]">
+                    {item.relationship}
+                    {item.sourceLocator
+                      ? ` · ${item.sourceLocator}`
+                      : ""}
                   </div>
                 </article>
               ))
