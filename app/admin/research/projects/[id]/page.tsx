@@ -25,6 +25,14 @@ type Source = {
   summary: string | null;
 };
 
+type Claim = {
+  id: number;
+  statement: string;
+  classification: string;
+  status: string;
+  importance: string;
+};
+
 export default function ResearchProjectDetailPage() {
   const params = useParams<{ id: string }>();
   const [project, setProject] = useState<Project | null>(null);
@@ -35,6 +43,12 @@ export default function ResearchProjectDetailPage() {
   const [sourceType, setSourceType] = useState("WEB");
   const [sourceSummary, setSourceSummary] = useState("");
   const [savingSource, setSavingSource] = useState(false);
+  const [claims, setClaims] = useState<Claim[]>([]);
+  const [claimStatement, setClaimStatement] = useState("");
+  const [claimClassification, setClaimClassification] = useState("UNVERIFIED");
+  const [claimStatus, setClaimStatus] = useState("OPEN");
+  const [claimImportance, setClaimImportance] = useState("MEDIUM");
+  const [savingClaim, setSavingClaim] = useState(false);
 
   useEffect(() => {
     fetch(`/api/admin/research/projects/${params.id}`)
@@ -49,6 +63,14 @@ export default function ResearchProjectDetailPage() {
 
         if (sourcesResponse.ok) {
           setSources(await sourcesResponse.json());
+        }
+
+        const claimsResponse = await fetch(
+          `/api/admin/research/claims?projectId=${params.id}`
+        );
+
+        if (claimsResponse.ok) {
+          setClaims(await claimsResponse.json());
         }
       })
       .catch((err) => setError(err.message));
@@ -93,6 +115,38 @@ export default function ResearchProjectDetailPage() {
       setError(error instanceof Error ? error.message : "Failed to add source.");
     } finally {
       setSavingSource(false);
+    }
+  }
+
+  async function handleAddClaim(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setSavingClaim(true);
+
+    try {
+      const response = await fetch("/api/admin/research/claims", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          researchProjectId: Number(params.id),
+          statement: claimStatement.trim(),
+          classification: claimClassification,
+          status: claimStatus,
+          importance: claimImportance,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to add claim.");
+      }
+
+      setClaims((current) => [...current, data]);
+      setClaimStatement("");
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Failed to add claim.");
+    } finally {
+      setSavingClaim(false);
     }
   }
 
@@ -225,6 +279,79 @@ export default function ResearchProjectDetailPage() {
                       {source.summary}
                     </p>
                   )}
+                </article>
+              ))
+            )}
+          </div>
+
+          <h2 className="text-xs font-bold tracking-[0.16em]">
+            RESEARCH CLAIMS
+          </h2>
+
+          <form onSubmit={handleAddClaim} className="mt-6 space-y-5">
+            <textarea
+              required
+              value={claimStatement}
+              onChange={(event) => setClaimStatement(event.target.value)}
+              placeholder="Write a research claim..."
+              rows={4}
+              className="w-full border border-[#CBC9C0] bg-transparent px-4 py-3 text-sm outline-none"
+            />
+
+            <div className="grid gap-5 sm:grid-cols-3">
+              <select
+                value={claimClassification}
+                onChange={(event) => setClaimClassification(event.target.value)}
+                className="border-b border-[#CBC9C0] bg-transparent py-3 text-sm outline-none"
+              >
+                <option value="UNVERIFIED">UNVERIFIED</option>
+                <option value="SUPPORTED">SUPPORTED</option>
+                <option value="DISPUTED">DISPUTED</option>
+              </select>
+
+              <select
+                value={claimStatus}
+                onChange={(event) => setClaimStatus(event.target.value)}
+                className="border-b border-[#CBC9C0] bg-transparent py-3 text-sm outline-none"
+              >
+                <option value="OPEN">OPEN</option>
+                <option value="REVIEWED">REVIEWED</option>
+                <option value="RESOLVED">RESOLVED</option>
+              </select>
+
+              <select
+                value={claimImportance}
+                onChange={(event) => setClaimImportance(event.target.value)}
+                className="border-b border-[#CBC9C0] bg-transparent py-3 text-sm outline-none"
+              >
+                <option value="LOW">LOW</option>
+                <option value="MEDIUM">MEDIUM</option>
+                <option value="HIGH">HIGH</option>
+              </select>
+            </div>
+
+            <button
+              type="submit"
+              disabled={savingClaim}
+              className="border border-[#1F1D1A] bg-[#1F1D1A] px-6 py-3 text-[10px] font-bold tracking-[0.16em] text-[#FFFAEB] disabled:opacity-50"
+            >
+              {savingClaim ? "ADDING..." : "ADD CLAIM"}
+            </button>
+          </form>
+
+          <div className="mt-8 space-y-4">
+            {claims.length === 0 ? (
+              <p className="text-sm text-[#4B4A47]">No claims added yet.</p>
+            ) : (
+              claims.map((claim) => (
+                <article
+                  key={claim.id}
+                  className="border-b border-[#CBC9C0] pb-5"
+                >
+                  <p className="font-serif text-xl">{claim.statement}</p>
+                  <div className="mt-3 text-[10px] font-bold tracking-[0.12em] text-[#B88A3B]">
+                    {claim.classification} · {claim.status} · {claim.importance}
+                  </div>
                 </article>
               ))
             )}
