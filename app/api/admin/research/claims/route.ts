@@ -26,6 +26,7 @@ export async function GET(request: Request) {
         : claims
     );
   } catch (error) {
+    console.error("GET research claims failed:", error);
     return NextResponse.json(
       { error: "Failed to fetch research claims." },
       { status: 500 }
