@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function NewGamePage() {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [description, setDescription] = useState("");
@@ -66,7 +68,7 @@ export default function NewGamePage() {
         );
       }
 
-      window.location.href = `/admin/games/${data.id}`;
+      router.push(`/admin/games/${data.id}`);
     } catch (error) {
       console.error("Create game failed:", error);
 
