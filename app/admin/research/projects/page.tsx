@@ -166,9 +166,12 @@ export default function ResearchProjectsPage() {
                   </div>
 
                   <div className="lg:text-right">
-                    <span className="border-b border-[#CBC9C0] pb-1 text-[9px] font-bold tracking-[0.14em] text-[#9A9891]">
+                    <Link
+                      href={`/admin/research/projects/${project.id}`}
+                      className="border-b border-[#1F1D1A] pb-1 text-[9px] font-bold tracking-[0.14em] hover:border-[#B88A3B] hover:text-[#B88A3B]"
+                    >
                       OPEN
-                    </span>
+                    </Link>
                   </div>
                 </article>
               ))}
