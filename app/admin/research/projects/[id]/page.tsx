@@ -299,35 +299,44 @@ export default function ResearchProjectDetailPage() {
             />
 
             <div className="grid gap-5 sm:grid-cols-3">
-              <select
-                value={claimClassification}
-                onChange={(event) => setClaimClassification(event.target.value)}
-                className="border-b border-[#CBC9C0] bg-transparent py-3 text-sm outline-none"
-              >
-                <option value="UNVERIFIED">UNVERIFIED</option>
-                <option value="SUPPORTED">SUPPORTED</option>
-                <option value="DISPUTED">DISPUTED</option>
-              </select>
+              <label className="text-[10px] font-bold tracking-[0.16em]">
+                CLASSIFICATION
+                <select
+                  value={claimClassification}
+                  onChange={(event) => setClaimClassification(event.target.value)}
+                  className="mt-2 w-full border-b border-[#CBC9C0] bg-transparent py-3 text-sm outline-none"
+                >
+                  <option value="UNVERIFIED">UNVERIFIED</option>
+                  <option value="SUPPORTED">SUPPORTED</option>
+                  <option value="DISPUTED">DISPUTED</option>
+                </select>
+              </label>
 
-              <select
-                value={claimStatus}
-                onChange={(event) => setClaimStatus(event.target.value)}
-                className="border-b border-[#CBC9C0] bg-transparent py-3 text-sm outline-none"
-              >
-                <option value="OPEN">OPEN</option>
-                <option value="REVIEWED">REVIEWED</option>
-                <option value="RESOLVED">RESOLVED</option>
-              </select>
+              <label className="text-[10px] font-bold tracking-[0.16em]">
+                STATUS
+                <select
+                  value={claimStatus}
+                  onChange={(event) => setClaimStatus(event.target.value)}
+                  className="mt-2 w-full border-b border-[#CBC9C0] bg-transparent py-3 text-sm outline-none"
+                >
+                  <option value="OPEN">OPEN</option>
+                  <option value="REVIEWED">REVIEWED</option>
+                  <option value="RESOLVED">RESOLVED</option>
+                </select>
+              </label>
 
-              <select
-                value={claimImportance}
-                onChange={(event) => setClaimImportance(event.target.value)}
-                className="border-b border-[#CBC9C0] bg-transparent py-3 text-sm outline-none"
-              >
-                <option value="LOW">LOW</option>
-                <option value="MEDIUM">MEDIUM</option>
-                <option value="HIGH">HIGH</option>
-              </select>
+              <label className="text-[10px] font-bold tracking-[0.16em]">
+                IMPORTANCE
+                <select
+                  value={claimImportance}
+                  onChange={(event) => setClaimImportance(event.target.value)}
+                  className="mt-2 w-full border-b border-[#CBC9C0] bg-transparent py-3 text-sm outline-none"
+                >
+                  <option value="LOW">LOW</option>
+                  <option value="MEDIUM">MEDIUM</option>
+                  <option value="HIGH">HIGH</option>
+                </select>
+              </label>
             </div>
 
             <button
