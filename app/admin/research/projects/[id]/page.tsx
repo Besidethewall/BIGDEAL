@@ -214,6 +214,54 @@ export default function ResearchProjectDetailPage() {
     }
   }
 
+  async function handleDeleteSource(sourceId: number) {
+    if (!confirm("Delete this source?")) return;
+
+    try {
+      const response = await fetch(
+        `/api/admin/research/sources?sourceId=${sourceId}&projectId=${params.id}`,
+        { method: "DELETE" }
+      );
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to delete source.");
+      }
+
+      setSources((current) =>
+        current.filter((source) => source.id !== sourceId)
+      );
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : "Failed to delete source."
+      );
+    }
+  }
+
+  async function handleDeleteClaim(claimId: number) {
+    if (!confirm("Delete this claim?")) return;
+
+    try {
+      const response = await fetch(
+        `/api/admin/research/claims?claimId=${claimId}`,
+        { method: "DELETE" }
+      );
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to delete claim.");
+      }
+
+      setClaims((current) =>
+        current.filter((claim) => claim.id !== claimId)
+      );
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : "Failed to delete claim."
+      );
+    }
+  }
+
   return (
     <main className="min-h-screen bg-[#FFFAEB] text-[#1F1D1A]">
       <header className="border-b border-[#CBC9C0]">
@@ -329,15 +377,28 @@ export default function ResearchProjectDetailPage() {
                   key={source.id}
                   className="border-b border-[#CBC9C0] pb-4"
                 >
-                  <h3 className="font-serif text-xl">{source.title}</h3>
-                  <a
-                    href={source.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mt-2 block text-sm text-[#B88A3B] underline"
-                  >
-                    {source.url}
-                  </a>
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <h3 className="font-serif text-xl">{source.title}</h3>
+                      <a
+                        href={source.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-2 block text-sm text-[#B88A3B] underline"
+                      >
+                        {source.url}
+                      </a>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteSource(source.id)}
+                      className="text-[10px] font-bold tracking-[0.16em] text-[#B88A3B]"
+                    >
+                      DELETE
+                    </button>
+                  </div>
+
                   {source.summary && (
                     <p className="mt-2 text-sm leading-6 text-[#4B4A47]">
                       {source.summary}
@@ -421,7 +482,18 @@ export default function ResearchProjectDetailPage() {
                   key={claim.id}
                   className="border-b border-[#CBC9C0] pb-5"
                 >
-                  <p className="font-serif text-xl">{claim.statement}</p>
+                  <div className="flex items-start justify-between gap-4">
+                    <p className="font-serif text-xl">{claim.statement}</p>
+
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteClaim(claim.id)}
+                      className="text-[10px] font-bold tracking-[0.16em] text-[#B88A3B]"
+                    >
+                      DELETE
+                    </button>
+                  </div>
+
                   <div className="mt-3 text-[10px] font-bold tracking-[0.12em] text-[#B88A3B]">
                     {claim.classification} · {claim.status} · {claim.importance}
                   </div>
